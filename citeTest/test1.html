@@ -1,0 +1,27 @@
+<h1 id="title">Title</h1>
+<h2 id="heading-2">Heading 2</h2>
+<p>Based initially on <a href="https://www.youtube.com/watch?v=nO4T8JDNYG0">Writing academic papers on the command line</a></p>
+<h3 id="jan">23 Jan</h3>
+<p>Got pdfinfo working but the metadata are disappointing, frequently missing the DOI</p>
+<p>Next step he uses is tapping crossref with curl</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">doi2bib ()</span>
+<span class="kw">{</span>
+    <span class="bu">echo</span> <span class="op">&gt;&gt;</span> bib.bib
+    <span class="ex">curl</span> -s <span class="st">&quot;http://api.crossref.org/works/</span><span class="va">$1</span><span class="st">/transform/application/x-bibtx&quot;</span> <span class="op">&gt;&gt;</span> bib.bib
+    <span class="bu">echo</span> <span class="op">&gt;&gt;</span> bib.bib
+<span class="kw">}</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> random
+<span class="bu">print</span> random.random()
+<span class="bu">print</span> <span class="st">&quot;hello world&quot;</span></code></pre></div>
+<p>Btw, you'll want to setup <a href="https://github.com/vim-pandoc/vim-pandoc">pandoc</a> (once you have pathogen) [<span class="citation">Duflo and Saez (2002)</span> <span class="citation">Scahill et al. (2013)</span> <span class="citation">Ashraf, Karlan, and Yin (2006)</span></p>
+<div id="refs" class="references">
+<div id="ref-Ashraf:2006tv">
+<p>Ashraf, N, D Karlan, and W Yin. 2006. “Tying Odysseus to the mast: Evidence from a commitment savings product in the Philippines.” <em>The Quarterly Journal of Economics</em> 121 (2): 635–72.</p>
+</div>
+<div id="ref-Duflo:2002tl">
+<p>Duflo, Esther, and Emmanuel Saez. 2002. “The Role of Information and Social Interactions in Retirement Plan Decisions: Evidence from a Randomized Experiment.” <em>National Bureau of Economic Research Working Paper Series</em> No. 8885.</p>
+</div>
+<div id="ref-Scahill:2013kx">
+<p>Scahill, Michael D, Petruska Maak, Christian Kunder, and Louis P Halamek. 2013. “Anterolateral congenital diaphragmatic hernia with omphalocele: A case report and literature review.” <em>American Journal of Medical Genetics Part A</em>, February.</p>
+</div>
+</div>

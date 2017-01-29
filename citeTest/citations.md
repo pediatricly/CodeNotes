@@ -1,6 +1,8 @@
+#Title
+##Heading 2
 Based initially on [Writing academic papers on the command line](https://www.youtube.com/watch?v=nO4T8JDNYG0)
 
-23 Jan
+###23 Jan
 Got pdfinfo working but the metadata are disappointing, frequently missing the 
 DOI
 
@@ -14,5 +16,12 @@ doi2bib ()
 	echo >> bib.bib
 }
 ```
+```python
+import random
+print random.random()
+print "hello world"
+```
 
-Btw, you'll want to setup [pandoc](https://github.com/vim-pandoc/vim-pandoc) (once you have pathogen)
+
+Btw, you'll want to setup [pandoc](https://github.com/vim-pandoc/vim-pandoc) (once you have pathogen) [@Duflo:2002tl @Scahill:2013kx @Ashraf:2006tv
+
