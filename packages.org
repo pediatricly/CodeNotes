@@ -74,6 +74,9 @@
          - Papers & ReadCube can export these. PubMed can export a few
            formats, including nbib. And the video that set all this off shows
            a Unix library that can return bibTeX from a PMID.
+           - Just found these resources that look very useful for this:
+             - [[https://mlbernauer.wordpress.com/2014/10/18/48/][Blog Post]]
+             - [[https://github.com/jepoirrier/pyP2B][pyP2B]]
          - Seems .ris et al would work, too. cf pandoc user guide p 54
          - vim-pandoc looks in the working dir by default. cf vim-pandoc/doc/pandoc.txt
            g:pandoc#biblio#sources
