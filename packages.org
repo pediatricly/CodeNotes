@@ -108,6 +108,51 @@
     2. [[https://github.com/jgm/pandoc-citeproc/blob/master/man/pandoc-citeproc.1.md][Pandoc-citeproc docs]]
     3. [[https://github.com/vim-pandoc/vim-pandoc/blob/master/doc/pandoc.txt][vim-pandoc docs]]
 
+** unexpected "a" error[2017-02-04 Sat]
+   Running my new creation today to make a top citations list, I got this
+   error:
+   ```bash
+   Mike@kraftwerk:~/Dropbox/Virta$ pandoc --filter pandoc-citeproc topCitations.md -o output.html --bibliography 170131_VirtaCite_Export.bib
+   pandoc-citeproc: "stdin" (line 4013, column 2):
+   unexpected "a"
+   expecting "c", "C", "p", "P", "s" or "S"
+   CallStack (from HasCallStack):
+     error, called at src/Text/CSL/Input/Bibtex.hs:112:32 in pandoc-citeproc-0.10.3-57Q5sLpqV8P8BGTtOT78ug:Text.CSL.Input.Bibtex
+   pandoc: Error running filter pandoc-citeproc
+   Filter returned error status 1
+   ```
+   I found 2 resources, but they only provided hints..
+   1. [[https://github.com/jgm/pandoc/issues/1034][GitHub]]
+   2. [[https://groups.google.com/forum/#!topic/pandoc-discuss/P7QmLE0u2S8][GGroups]]
+   
+   But then I figured it out
+   The citation starting on line 4013 in the .bib (jakicic2016effect) had
+   typo - an unmatched } that was supposed to be ] inside the abstract. This 
+   is a no-no as {} denote each field, so it left an unstructured fragment.
+   I edited both the bib and the actual reference in ReadCube so it won't
+   repopulate.
+
+** csl - citation formats
+   Figured it out [2017-02-04 Sat]
+   1. Find your style XML settings from [[https://www.zotero.org/styles][Zotero]]
+   2. From CLI, use:
+      pandoc --filter pandoc-citeproc topCitations.md -o output.html --bibliography 170131_VirtaCite_Export.bib --csl=american-medical-association.xml
+      NB: This assumes that xml is in the working directory, o/w need a
+      relative/abs path
+
+** case - sentence vs preserve
+   I noticed that my refs were all being converted into sentence case even
+   though some eg Atkins should not (arguably).
+   Per [[http://manpages.ubuntu.com/manpages/xenial/man1/pandoc-citeproc.1.html][the doc]]
+   you can protect case & special characters by surrounding them with an
+   extra set of {}. So I added those around Gardner's A to Z and voila.
+   If I wanted to do it right in future, I could just have a Vim recording
+   cover them all (I can't find a default setting to change this in
+   citeproc).
+*** Symbols, Greek Letters, Beta
+    I also noticed betas didn't seem to be treated uniformly. I was actually
+    surprised that .bib can handle actual Beta characters fine. But some
+    citations just have a Roman b instead.
 
 * org-mode									   :org-mode:vim:
 ** [2017-01-28 Sat]
@@ -126,3 +171,80 @@
 
 *** TODO Setup emacs export, latex<2017-01-28 Sat>
     http://orgmode.org
+ 
+* Twilio
+** [2017-02-04 Sat]
+   I got the Twilio API working on a test account on mds@g, St@..3. All I
+   really had to do I think was:
+   `sudo pip install twilio`
+   I also `sudo pip install Flask` cuz somewhere in their docs that sounded
+   important.
+   [[https://www.twilio.com/docs/libraries/python][Twilio Python Docs]]
+   Note that, while you can pick among a ton of Twilio sending #s, to use it
+   with a free account, you need to verify the destination phone # with a
+   code. For this project, I setup my 917 & Amy McKenzie's cell.
+   I did have trouble with the API keys. For reasons I don't understand, the
+   numbers they showed me when I created the keys were not right.
+   Fortunately, their
+   [[https://www.twilio.com/console/dev-tools/api-explorer/voice/call-create][API Explorer]] 
+   was very useful -> the keys are in virtaCode/jmir/twiliokeys.py
+
+   What I could not get to work was running it on pediatricly with a cron
+   job. The cron worked fine, but despite copying:
+    - htttplib2
+    - ssl & OpenSSL
+    - pytz
+    - twilio
+    - six
+   into my cgi-bin/jmir, I could never get passed the httplib.HTTPSConnection
+   not found. I think that's a relic IX running Python 2.6, but I couldn't
+   find a package to supplant it. This
+    [[http://stackoverflow.com/questions/877072/httpsconnection-module-missing-in-python-2-6-on-centos-5-2][SO]]
+      [[https://github.com/pypa/pip/issues/833][And this GitHub]] seem to report 
+      a similar problem, but I'm not sure I can install OpenSSL on IX.
+      I ended up reverting to the jmirEmail script and running jmirTwil with a 
+      local cron on my MacBook Pro.
+
+   But hey, Twilio works and it's pretty sweet.
+
+* cron, schedule, etc
+** [2017-02-04 Sat] Migrated from Evernote & added
+    cron is a Unix program that has a background daemon to run commands, including programs, on a schedule.
+    - [[http://stackoverflow.com/questions/8727935/execute-python-script-on-crontab][Basic SO]] 
+   for recurring task
+      (and[[http://stackoverflow.com/questions/5200551/how-to-set-a-cron-job-to-run-at-a-exact-time][another for exact time]) on using crontab
+    - Nice, simple
+      [[http://www.thesitewizard.com/general/set-cron-job.shtml][tutorial]] on 
+      setting up Cron tasks on a Unix webserver - IX has a web interface for 
+      cron (in the FTP Manager). Few IX tech support emails 5-6Dec15 on this. 
+      Note: Can use this to do all sorts of Unix commands on the IX server. 
+      Figured out that IX Web Host Cron is set for EST
+      When running on a server, the std out gets emailed to a pre-set address.
+      Might be able to do this on something like the Stanford corn server, too,
+      but haven’t tried yet (7dec15)
+    
+    - [[http://www.adminschoice.com/crontab-quick-reference][Tutorial on Crontab]]
+    - [[https://ole.michelsen.dk/blog/schedule-jobs-with-crontab-on-mac-osx.html][Using crontab on a Mac]] 
+    
+   Today, actually used cron on my MacBook Pro for the Twilio script.
+   What ended up working was:
+      ```bash
+      ~$ vim .crontab
+      (wrote */1 * * * * cd ~/virtaCode/jmir && python jmirTwil.py)
+      ~$ crontab ~/,crontab
+      ```
+      `crontab -l` then shows the task & it runs
+      Above per [[http://stackoverflow.com/questions/15395479/why-ive-got-no-crontab-entry-on-os-x-when-using-vim][SO M Campbell]]
+      It sounds like cron doesn't actually read from .crontab once I run that
+      command. Not sure how to edit it ex-post. `crontab -e` seems to work
+      (and does so in my default of Vim), but I can't tell where the actual
+      config file is saved.
+   This [[http://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs][detailed post]]
+      seems to cover the whole cron / launchd thing in MacOS.
+
+    Older, initial stuff:
+    Nice SO post - http://stackoverflow.com/questions/373335/how-do-i-get-a-cron-like-scheduler-in-python
+    http://stackoverflow.com/questions/17634089/implement-an-automatic-reminder-email-feature-for-web-based-application
+    Google’s Cron + Python - https://cloud.google.com/appengine/docs/python/config/cron?hl=en
+    A reminder script in Python - https://gist.github.com/yann2192/f115582f1b263916490b
+  
